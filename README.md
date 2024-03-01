@@ -1,4 +1,4 @@
-This project is implementation of GPU (Graphics Processing Unit) with C++. 
+This project is implementation of GPU (Graphics Processing Unit) with C. 
 Project contains numerous sets of functions and data structures designed to facilitate graphics rendering operations on a GPU. This documentation provides an overview of the functionalities provided by the GPU Implementation and how to use them.
 By following the guidelines and examples provided in this documentation, developers can efficiently utilize the GPU for rendering high-quality graphics in their applications.
 
