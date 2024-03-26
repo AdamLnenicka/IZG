@@ -90,3 +90,40 @@ int main() {
     return 0;
 }
 ```
+
+
+Functionality of main.c file
+Command Line Arguments Handling
+
+The program checks for command line arguments, specifically -c for conformance tests and -p for performance tests.
+If the -c flag is provided, the program runs conformance tests comparing rendered output to a reference image.
+If the -p flag is provided, the program executes performance tests.
+SDL2 Initialization
+
+Initializes the SDL2 library for video rendering.
+Window and Surface Creation
+
+Creates a window for rendering with specified dimensions.
+Obtains a surface for drawing graphics within the window.
+Renderer Creation
+
+Sets up a software renderer for rendering graphics on the surface.
+Scene Initialization and Rendering
+
+Defines pointers to methods responsible for initializing, rendering, and cleaning up various scenes.
+Allows switching between different rendering methods dynamically.
+Handles user input events, such as keyboard and mouse interactions, to control scene switching and scene-specific actions.
+Main Loop
+
+Enters a main loop where events are processed and scenes are rendered continuously until the user closes the window.
+Cleanup
+
+Properly releases all allocated resources upon program termination.
+Usage
+To run the application:
+bash
+Copy code
+./application_name [options]
+Options
+-c <path_to_reference_image>: Run conformance tests comparing rendered output to a reference image.
+-p: Run performance tests.
