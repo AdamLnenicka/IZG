@@ -1,4 +1,5 @@
 Implementation of a rendering system, including the main program, CPU-side operations, rendering pipeline, and shaders.
+![obrazek](https://github.com/AdamLnenicka/IZG/assets/70570107/d14c3eaf-e9a2-43f0-9966-1c6a58d2b136)
 
 ### Files
 The project consists of several source files, each serving a distinct purpose in the rendering process.
