@@ -1,136 +1,133 @@
-This project is implementation of GPU (Graphics Processing Unit) with C. 
-Project contains numerous sets of functions and data structures designed to facilitate graphics rendering operations on a GPU. This documentation provides an overview of the functionalities provided by the GPU Implementation and how to use them.
-By following the guidelines and examples provided in this documentation, developers can efficiently utilize the GPU for rendering high-quality graphics in their applications.
+Implementation of a rendering system, including the main program, CPU-side operations, rendering pipeline, and shaders.
 
-Certainly! Here's a draft of the documentation for the provided GPU implementation code:
+### Files
+The project consists of several source files, each serving a distinct purpose in the rendering process.
+In this Documentation I will be describing files that I have worked on:
 
----
+- **Main Program**: `main.c` - Contains the entry point and orchestration of the rendering process.
+- **CPU-side Operations**: `CPU.C` - Implements CPU-side operations, including data loading and manipulation.
+- **Rendering Pipeline**: `PIPELINE.C` - Implements the rendering pipeline responsible for transforming vertices and assembling primitives for rasterization.
+- **Shaders**: `SHADER.C` - Contains implementations of vertex and fragment shaders for lighting and shading computations.
 
-## Functions
+### Main Program
+#### `main.c`
+- **Overview**: Serves as the entry point for the rendering system. It initializes necessary resources, orchestrates the rendering process, and handles user interaction.
+- **Functions**:
+  - `main`: Entry point for the program. Initializes resources, sets up the rendering environment, and enters the rendering loop.
+  - Additional functions for resource initialization, rendering loop, and cleanup.
 
-### Vertex Puller Operations
-- `cpu_setIndexing`: Sets the indexing for vertex data in a Vertex Puller.
-- `cpu_enableVertexPullerHead`: Enables a specific vertex attribute in a Vertex Puller.
-- `cpu_disableVertexPullerHead`: Disables a specific vertex attribute in a Vertex Puller.
-- `cpu_bindVertexPuller`: Binds a Vertex Puller for subsequent rendering operations.
+### CPU-side Operations
+#### `CPU.C`
+- **Overview**: Implements CPU-side operations such as data loading, manipulation, and preparation for rendering.
+- **Functions**:
+  - Functions for loading data from files or other sources.
+  - Data manipulation functions for preprocessing or transforming input data.
+  - Additional utilities for CPU-side operations.
 
-### GPU Program Operations
-- `cpu_createProgram`: Creates a new GPU program.
-- `cpu_deleteProgram`: Deletes a GPU program.
-- `cpu_attachVertexShader`: Attaches a vertex shader to a GPU program.
-- `cpu_attachFragmentShader`: Attaches a fragment shader to a GPU program.
-- `cpu_useProgram`: Specifies which GPU program should be used for rendering.
+### Rendering Pipeline
+#### `PIPELINE.C`
+- **Overview**: Implements the rendering pipeline responsible for transforming input vertices into clip-space coordinates, assembling primitives, and preparing data for rasterization.
+- **Functions**:
+  - `gpu_computeGLVertexID`: Computes the `gl_VertexID` from the `vertexShaderInvocation`.
+  - `gpu_computeVertexAttributeDataPointer`: Computes the pointer to vertex attribute data based on the vertex index.
+  - `gpu_runVertexPuller`: Runs the vertex puller to set the correct addresses for vertex attributes.
+  - `gpu_runPrimitiveAssembly`: Assembles primitives by running the vertex puller and vertex shader for each vertex.
 
-### Rendering Operations
-- `cpu_clearColor` and `cpu_clearDepth`: Clears the color and depth buffers, respectively.
-- `cpu_getColor` and `gpu_getDepth`: Retrieves the color and depth values at a specific pixel location, respectively.
-- `gpu_setDepth` and `gpu_setColor`: Sets the depth and color values at a specific pixel location, respectively.
-- `cpu_setViewportSize`: Sets the viewport size for rendering.
+### Vertex and Fragment Shaders
+#### `SHADER.C`
+- **Overview**: Implements vertex and fragment shaders for lighting and shading computations using the Phong illumination model.
+- **Functions**:
+  - `phong_vertexShader`: Transforms input vertices into clip-space coordinates and computes output vertex attributes.
+  - `phong_fragmentShader`: Computes Phong shading with specular reflection based on input fragment attributes.
+- **Additional Elements**:
+  - Macros and Functions for value clamping.
 
-### Shader Interpretation
-- Functions for interpreting vertex and fragment shader inputs and outputs as different types (`float`, `Vec2`, `Vec3`, `Vec4`).
+## CPU.C
 
-## Usage
-1. Initialize the GPU and create Vertex Pullers, GPU programs, and shaders as needed.
-2. Set up vertex data, indexing, and vertex attributes using the provided functions.
-3. Bind the appropriate Vertex Puller and GPU program for rendering.
-4. Clear the color and depth buffers if necessary.
-5. Render geometry by specifying draw calls and issuing rendering commands.
-6. Retrieve rendered results as needed.
+This file contains the implementation of the CPU side for Phong shading.
 
-## Error Handling
-- Functions assert GPU validity and handle invalid inputs gracefully.
-- Error messages are printed to standard error for debugging purposes.
+### Functions
 
-## Example
-```cpp
-// Example code snippet demonstrating the usage of the GPU Implementation
+#### `phong_onInit(int32_t width, int32_t height)`
 
-#include <gpu.h>
+This function is called to initialize the CPU side of the Phong shading. It creates a GPU, sets the viewport size, initializes matrices, initializes light position, reserves uniform variables for matrices, camera position, and light position, creates a shader program, attaches shaders, sets attribute interpolation, creates buffers for bunny vertices and indices, configures the vertex puller, and sets up indexing.
 
-int main() {
-    // Initialize GPU
-    GPU gpu = initialize_gpu();
+##### Parameters
+- `width`: The width of the viewport.
+- `height`: The height of the viewport.
 
-    // Create a Vertex Puller
-    VertexPullerID puller = create_vertex_puller(gpu);
+#### `phong_onExit()`
 
-    // Enable vertex attributes
-    enable_vertex_attribute(gpu, puller, ATTRIBUTE_POSITION);
-    enable_vertex_attribute(gpu, puller, ATTRIBUTE_NORMAL);
+This function is called to clean up resources used by the CPU side of the Phong shading.
 
-    // Create a GPU program
-    ProgramID program = create_program(gpu);
+#### `phong_onDraw(SDL_Surface *surface)`
 
-    // Attach vertex and fragment shaders
-    attach_vertex_shader(gpu, program, VERTEX_SHADER);
-    attach_fragment_shader(gpu, program, FRAGMENT_SHADER);
+This function is called to perform drawing using Phong shading. It clears the depth and color buffers, activates the shader program, activates the vertex puller, sets uniform data for matrices, camera position, and light position, and draws triangles.
 
-    // Use the GPU program for rendering
-    use_program(gpu, program);
+##### Parameters
+- `surface`: Pointer to the SDL surface to draw onto.
 
-    // Set viewport size
-    set_viewport_size(gpu, 800, 600);
-
-    // Clear color and depth buffers
-    clear_color(gpu, {0.0f, 0.0f, 0.0f, 1.0f});
-    clear_depth(gpu, 1.0f);
-
-    // Render geometry
-    render_geometry(gpu, puller);
-
-    // Retrieve rendered results
-    // ...
-
-    // Cleanup
-    delete_program(gpu, program);
-    destroy_vertex_puller(gpu, puller);
-    shutdown_gpu(gpu);
-
-    return 0;
-}
-```
+### Todo
+- Complete the initialization function (`phong_onInit`) by implementing buffer creation, shader program setup, vertex puller configuration, and uniform variable setup.
+- Implement the drawing function (`phong_onDraw`) by activating the shader program, activating the vertex puller, setting uniform data, and drawing triangles.
 
 
-<h2> main.c file</h2>
 
-### Purpose
-This file serves as the main entry point for the application. It is responsible for initializing the SDL2 library, creating a window for graphics output, handling user events, and managing the rendering of different scenes using various methods.
+## PIPELINE.C
 
-## Functionality
+This file contains the implementation of the rendering pipeline.
 
-1. **Command Line Arguments Handling**
-   - The program checks for command line arguments, specifically `-c` for conformance tests and `-p` for performance tests.
-   - If the `-c` flag is provided, the program runs conformance tests comparing rendered output to a reference image.
-   - If the `-p` flag is provided, the program executes performance tests.
+### Functions
 
-2. **SDL2 Initialization**
-   - Initializes the SDL2 library for video rendering.
+#### `gpu_computeGLVertexID(const VertexIndex *const indices, const VertexShaderInvocation vertexShaderInvocation)`
 
-3. **Window and Surface Creation**
-   - Creates a window for rendering with specified dimensions.
-   - Obtains a surface for drawing graphics within the window.
+This function computes the `gl_VertexID` from the `vertexShaderInvocation` and optional indexing. If indexing is not used, it returns the `vertexShaderInvocation`. If indexing is used, it retrieves the vertex index from the indices array.
 
-4. **Renderer Creation**
-   - Sets up a software renderer for rendering graphics on the surface.
+#### `gpu_computeVertexAttributeDataPointer(const GPUVertexPullerHead *const head, const VertexIndex gl_VertexID)`
 
-5. **Scene Initialization and Rendering**
-   - Defines pointers to methods responsible for initializing, rendering, and cleaning up various scenes.
-   - Allows switching between different rendering methods dynamically.
-   - Handles user input events, such as keyboard and mouse interactions, to control scene switching and scene-specific actions.
+This function computes the pointer to the data of the specified vertex attribute based on the vertex puller head and `gl_VertexID`. It considers the enabled status of the head and calculates the precise address of the attribute data.
 
-6. **Main Loop**
-   - Enters a main loop where events are processed and scenes are rendered continuously until the user closes the window.
+#### `gpu_runVertexPuller(GPUVertexPullerOutput *const output, const GPUVertexPullerConfiguration *const puller, const VertexShaderInvocation vertexShaderInvocation)`
 
-7. **Cleanup**
-   - Properly releases all allocated resources upon program termination.
+This function runs the vertex puller, computing the addresses of vertex attributes for the specified `vertexShaderInvocation`. It iterates over enabled vertex puller heads, computes the attribute pointers, and stores them in the output structure.
 
-## Usage
-- To run the application:
-  ```
-  ./application_name [options]
-  ```
+#### `gpu_runPrimitiveAssembly(const GPU gpu, GPUPrimitive *const primitive, const size_t nofPrimitiveVertices, const GPUVertexPullerConfiguration *const puller, const VertexShaderInvocation baseVertexShaderInvocation, const VertexShader vertexShader)`
 
-## Options
-- `-c <path_to_reference_image>`: Run conformance tests comparing rendered output to a reference image.
-- `-p`: Run performance tests.
+This function assembles primitives by running the vertex puller and vertex shader for each vertex of the primitive. It computes the `vertexShaderInvocation` for each vertex, runs the vertex puller to obtain attribute data, and runs the vertex shader to process the attributes. It populates the `primitive` structure with the resulting vertices.
+
+### Additional Functions (Truncated)
+
+Due to space constraints, the following functions' descriptions have been truncated:
+- `gpu_runFrustumPlaneClippingOnEdge`: Performs clipping of an edge by a frustum plane.
+- `gpu_writeClippedTriangle_OneVertexVisible`: Writes one triangle when only one vertex is visible.
+
+These functions handle frustum plane clipping and triangle clipping, respectively.
+
+
+
+## SHADER.C
+
+This file contains the implementation of the Phong vertex and fragment shaders.
+
+### Phong Vertex Shader
+
+#### `phong_vertexShader(GPUVertexShaderOutput *const output, const GPUVertexShaderInput *const input, const GPU gpu)`
+
+This function transforms input vertices into clip-space. It retrieves the view and projection matrices from the GPU's uniform variables, interprets input vertex attributes (position and normal) from the GPU, and transforms the position to clip-space using matrix multiplication. The transformed position and normal are written to the output structure.
+
+### Phong Fragment Shader
+
+#### `phong_fragmentShader(GPUFragmentShaderOutput *const output, const GPUFragmentShaderInput *const input, const GPU gpu)`
+
+This function computes Phong shading with Phong specular reflection. It retrieves the camera and light positions from the GPU's uniform variables, interprets input fragment attributes (interpolated position and normal) from the GPU, and performs the following calculations:
+- Diffuse color calculation based on the orientation of the surface normal.
+- Diffuse and specular lighting calculations using the Phong reflection model.
+- Writing the final color to the output structure.
+
+### Additional Macros and Functions
+
+- `CLAMPF(_x, _min, _max)`: A macro to constrain a float value within a specified range.
+- `clampVec3(Vec3 *const v, const float min, const float max)`: A function to constrain a Vec3 value within a specified range.
+
+These macros and functions assist in value clamping and are utilized within the shader implementations.
+
