@@ -12,9 +12,13 @@ In this Documentation I will be describing files that I have worked on:
 ### Main Program
 #### `main.c`
 - **Overview**: Serves as the entry point for the rendering system. It initializes necessary resources, orchestrates the rendering process, and handles user interaction.
-- **Functions**:
-  - `main`: Entry point for the program. Initializes resources, sets up the rendering environment, and enters the rendering loop.
-  - Additional functions for resource initialization, rendering loop, and cleanup.
+- - **Description**: 
+  - Initializes SDL library.
+  - Creates a window using SDL.
+  - Sets up the rendering environment and orchestrates the rendering process.
+  - Handles user input events such as keyboard and mouse interactions.
+  - Supports switching between different rendering methods using keyboard shortcuts.
+  - Manages the main rendering loop until the application is exited.
 
 ### CPU-side Operations
 #### `CPU.C`
